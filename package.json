@@ -1,0 +1,26 @@
+{
+  "name": "business-ims-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "sk sabbir hossain <sksabbirhossain4@gmail.com>",
+  "repository": "https://github.com/sksabbirhossain/business-ims-server",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bullmq": "^5.44.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.0",
+    "http-errors": "^2.0.0",
+    "ioredis": "^5.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "nodemon": "^3.1.7",
+    "stripe": "^18.1.0"
+  }
+}
