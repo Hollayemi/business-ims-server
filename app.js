@@ -17,7 +17,7 @@ const app = express();
 // CORS
 app.use(
   cors({
-    origin: "*", //["https://business-ims.vercel.app", "http://localhost:3000"],
+    origin: "*",
     methods: "GET, POST, PUT, PATCH, DELETE",
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,

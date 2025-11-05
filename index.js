@@ -30,17 +30,17 @@ async function monitorConnection() {
   }
 }
 
-// Check every 1 minute
-setInterval(monitorConnection, 60_000);
-// Run immediately at startup
-monitorConnection();
+// // Check every 1 minute
+// setInterval(monitorConnection, 60_000);
+// // Run immediately at startup
+// monitorConnection();
 
 /**
  * Connect to MongoDB with retry
  */
 async function connectDB() {
   try {
-    await mongoose.connect("mongodb://localhost:27017/business-ims", {
+    await mongoose.connect("mongodb+srv://stephanyemmitty:_Holla83626@cluster0.pb3wcml.mongodb.net/business-ims", {
       serverSelectionTimeoutMS: 5000, // 5s timeout
     });
     console.log("✅ Database connected");
