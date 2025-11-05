@@ -154,6 +154,7 @@ const updateCategory = async (req, res) => {
 const createCategory = async (req, res) => {
   try {
     //make user object
+    console.log(req.body)
     const newCategory = new Category({
       ...req.body,
       picture: null,
@@ -179,6 +180,7 @@ const createCategory = async (req, res) => {
       });
     }
   } catch (err) {
+    console.log(err)
     res.json({
       errors: {
         common: {

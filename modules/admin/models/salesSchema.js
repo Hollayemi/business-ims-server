@@ -93,8 +93,8 @@ const SalesSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["cash", "bank", "cash/bank"],
-      default: "cash",
+      enum: ["bank", "cash/bank"],
+      default: "bank",
       lowercase: true,
     },
     storeInfo: {

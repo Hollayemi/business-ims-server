@@ -1,5 +1,5 @@
-import  Stock from "../../models/stockSchema.js";
-import dailyStock from "../../models/dailyRecord.js";
+const Stock = require("../../models/stockSchema");
+const DailyStock = require("../../models/dailyRecord");
 
 async function updateDailyStock(stockId, quantitySold, quantityAdded, storeId, date = new Date()) {
     try {
@@ -9,23 +9,23 @@ async function updateDailyStock(stockId, quantitySold, quantityAdded, storeId, d
 
         // Get stock info
         const stock = await Stock.findById(stockId).populate('supplierInfo');
-        console.log(stock)
+        console.log(stock);
         if (!stock) return;
 
         // Calculate openedWith from previous day's closing
         const previousDate = new Date(targetDate);
         previousDate.setDate(previousDate.getDate() - 1);
 
-        const previousRecord = await dailyStock.findOne({
-            stock: stockId,
+        const previousRecord = await DailyStock.findOne({
+            product: stockId,
             date: previousDate,
             storeInfo: storeId
         });
 
-        const openedWith = previousRecord ? previousRecord.closingWith : stock.currentStock;
+        const openedWith = previousRecord ? previousRecord.closingWith : stock.quantity;
 
         // Upsert the daily stock record
-        await dailyStock.findOneAndUpdate(
+        await DailyStock.findOneAndUpdate(
             {
                 product: stockId,
                 date: targetDate,
@@ -33,7 +33,7 @@ async function updateDailyStock(stockId, quantitySold, quantityAdded, storeId, d
             },
             {
                 $set: {
-                    stockName: stock.name,
+                    productName: stock.name,
                     supplier: stock.supplierInfo?._id,
                     supplierName: stock.supplierInfo?.name,
                     openedWith: openedWith
@@ -50,7 +50,7 @@ async function updateDailyStock(stockId, quantitySold, quantityAdded, storeId, d
         );
 
         // Update closingWith for all records of this stock for the day
-        await dailyStock.findOneAndUpdate(
+        await DailyStock.findOneAndUpdate(
             {
                 product: stockId,
                 date: targetDate,
@@ -72,4 +72,5 @@ async function updateDailyStock(stockId, quantitySold, quantityAdded, storeId, d
         console.error('Error updating daily stock:', error);
     }
 }
-export default updateDailyStock
+
+module.exports = { updateDailyStock };

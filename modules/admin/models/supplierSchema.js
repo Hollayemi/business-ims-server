@@ -18,7 +18,7 @@ const supplierSchema = mongoose.Schema(
     description: {
       type: String,
       lowercase: true,
-      required: true,
+      required: false,
       trim: true,
     },
     email: {
@@ -28,7 +28,7 @@ const supplierSchema = mongoose.Schema(
     },
     phone: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     website: {
@@ -38,7 +38,7 @@ const supplierSchema = mongoose.Schema(
     },
     address: {
       type: String,
-      required: true,
+      required: false,
       lowercase: true,
       trim: true,
     },
@@ -51,7 +51,7 @@ const supplierSchema = mongoose.Schema(
     storeInfo: {
       type: mongoose.Types.ObjectId,
       ref: "Store",
-      required: true,
+      required: false,
     },
   },
   { timestamps: true }

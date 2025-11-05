@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const Customer = require("../../models/customerSchema");
@@ -7,7 +6,7 @@ const Sales = require("../../models/salesSchema");
 const PurchaseSchema = require("../../models/purchaseSchema");
 const DuePayment = require("../../models/duePaymentSchema");
 const { getReportPipeline } = require("./pipeline");
-const { default: updateDailyStock } = require("./dailyStockHelper");
+const { updateDailyStock } = require("./dailyStockHelper");
 
 //get all sales
 const getAllSales = async (req, res) => {
@@ -84,6 +83,8 @@ const getAllSales = async (req, res) => {
     });
   }
 };
+
+
 const getReport = async (req, res) => {
   try {
     const { customer, startDate, endDate, query, filter, page = 1, limit = 10 } = req.query;
@@ -91,7 +92,7 @@ const getReport = async (req, res) => {
     const currentLimit = parseInt(limit);
     const skip = (currentPage - 1) * currentLimit;
 
-    console.log( req.query)
+    console.log('Report Query Parameters:', { customer, startDate, endDate, query, filter, page, limit });
 
     // Build match stage for filtering
     let matchStage = {
@@ -102,10 +103,14 @@ const getReport = async (req, res) => {
     if (startDate || endDate) {
       matchStage.createdAt = {};
       if (startDate) {
-        matchStage.createdAt.$gte = new Date(startDate);
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        matchStage.createdAt.$gte = start;
       }
       if (endDate) {
-        matchStage.createdAt.$lte = new Date(endDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        matchStage.createdAt.$lte = end;
       }
     }
 
@@ -117,79 +122,94 @@ const getReport = async (req, res) => {
       matchStage.paymentStatus = "completed";
     }
 
-    // Text search (trxid)
-    
+    console.log('Match Stage:', JSON.stringify(matchStage, null, 2));
 
-    // Customer filter
+    // Customer filter - applies after customer lookup
     let customerFilter = {};
-    if (customer && customer !== "undefined" && customer.trim()) {
-      const regex = new RegExp(customer.trim(), "i");
-      customerFilter = { "customer.name": regex };
-    }
-    console.log({ query })
+
+    // Search by transaction ID or customer name
     if (query && query !== "undefined" && query.trim()) {
-      customerFilter = {
-        ...customerFilter,
-        $or: [
-          { trxid: { $regex: query.trim(), $options: "i" } },
-          { "customer.name": { $regex: query.trim(), $options: "i" } }
-        ]
+      const searchRegex = new RegExp(query.trim(), "i");
+
+      // Search in trxid at match stage
+      if (!matchStage.$or) {
+        matchStage.$or = [];
       }
-      const regex = new RegExp(query.trim(), "i");
-      matchStage.trxid = regex;
+      matchStage.$or.push({ trxid: searchRegex });
+
+      // Search in customer name after lookup
+      customerFilter.$or = [
+        { "customer.name": searchRegex }
+      ];
     }
+
+    // Specific customer filter
+    if (customer && customer !== "undefined" && customer.trim()) {
+      const customerRegex = new RegExp(customer.trim(), "i");
+      customerFilter["customer.name"] = customerRegex;
+    }
+
+    // If there's no $or in matchStage, remove it
+    if (matchStage.$or && matchStage.$or.length === 0) {
+      delete matchStage.$or;
+    }
+
+    console.log('Customer Filter:', JSON.stringify(customerFilter, null, 2));
 
     // Build the aggregation pipeline
-    const pipeline = getReportPipeline(matchStage, customerFilter, skip, currentLimit)
+    const pipeline = getReportPipeline(matchStage, customerFilter, skip, currentLimit);
 
-    // Create a separate pipeline for counting total documents
-    const countPipeline = [
-      { $match: matchStage },
-      { $unwind: "$cart" },
-      { $set: { customerId: { $toObjectId: "$customer" } } },
-      {
-        $lookup: {
-          from: "customers",
-          localField: "customerId",
-          foreignField: "_id",
-          as: "customer"
-        }
-      },
-      { $set: { customer: { $arrayElemAt: ["$customer", 0] } } },
-      { $match: customerFilter },
-      { $count: "totalDocuments" }
-    ];
+    console.log('Running aggregation pipeline...');
 
-    // Execute both pipelines
-    const [result, countResult] = await Promise.all([
-      Sales.aggregate(pipeline),
-      Sales.aggregate(countPipeline)
-    ]);
+    // Execute aggregation
+    const result = await Sales.aggregate(pipeline);
 
-    const totalDocuments = countResult[0]?.totalDocuments || 0;
+    console.log('Aggregation result:', result.length > 0 ? 'Data found' : 'No data found');
 
     // Format the response
-    if (result.length > 0) {
+    if (result.length > 0 && result[0].items) {
       const reportData = result[0];
-      console.log({ reportData })
+
+      console.log(reportData)
+
       res.json({
         data: reportData.items || [],
         summary: {
           totalItems: reportData.totalItems || 0,
           totalSale: reportData.totalSale || 0,
+          received: reportData.received || 0,
+          due: reportData.duePayment || 0,
           bank: reportData.bank || 0,
           cash: reportData.cash || 0,
           customers: reportData.customers || [],
           totalOrders: reportData.totalOrders || 0
         },
         pagination: {
-          total: totalDocuments,
+          total: reportData.totalOrders || 0,
           currentPage: currentPage,
-          totalPages: Math.ceil(totalDocuments / currentLimit),
+          totalPages: Math.ceil((reportData.totalOrders || 0) / currentLimit),
           limit: currentLimit
         }
       });
     } else {
+      // Check if there are any sales at all for debugging
+      const totalSalesCount = await Sales.countDocuments({ storeInfo: req.store.storeId });
+      console.log('Total sales in database for this store:', totalSalesCount);
+
+      if (totalSalesCount > 0) {
+        console.log('Sales exist but filters returned no results');
+        // Get one sample sale for debugging
+        const sampleSale = await Sales.findOne({ storeInfo: req.store.storeId }).lean();
+        console.log('Sample sale structure:', {
+          _id: sampleSale._id,
+          customer: typeof sampleSale.customer,
+          hasCart: !!sampleSale.cart,
+          cartLength: sampleSale.cart?.length,
+          createdAt: sampleSale.createdAt,
+          paymentStatus: sampleSale.paymentStatus
+        });
+      }
+
       // No results found
       res.json({
         data: [],
@@ -212,6 +232,7 @@ const getReport = async (req, res) => {
 
   } catch (err) {
     console.error("Error in getReport:", err);
+    console.error("Error stack:", err.stack);
     res.status(500).json({
       errors: {
         common: {
@@ -221,6 +242,8 @@ const getReport = async (req, res) => {
     });
   }
 };
+
+
 //get all sales
 const getDueSales = async (req, res) => {
   try {
@@ -366,6 +389,7 @@ const searchDueSalesByNameTrxId = async (req, res) => {
   }
 };
 
+
 //get a single sales
 const getSale = async (req, res) => {
   try {
@@ -416,12 +440,10 @@ const getSale = async (req, res) => {
 };
 
 
-
-
 const createSalesPayment = async (req, res) => {
   try {
     //create sales payment
-    console.log(req.body)
+    console.log("====>", req.body)
     const sale = req.body
     const salesPayment = new Sales({
       ...sale,
@@ -467,6 +489,7 @@ const createSalesPayment = async (req, res) => {
     });
   }
 };
+
 
 const createDueSalesPayment = async (req, res) => {
   try {
@@ -656,6 +679,7 @@ const deleteSale = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   getAllSales,

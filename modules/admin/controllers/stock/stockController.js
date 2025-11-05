@@ -1,7 +1,6 @@
-
 const Stock = require("../../models/stockSchema");
 const DailyStock = require('../../models/dailyRecord');
-const { default: updateDailyStock } = require("../sales/dailyStockHelper");
+const { updateDailyStock } = require("../sales/dailyStockHelper");
 
 //get all stock
 const getStocks = async (req, res) => {
@@ -91,6 +90,7 @@ const searchStock = async (req, res) => {
   try {
     //get search query
     const search = req.query?.name;
+    console.log({ search })
 
     //get stocks from database
     const stocks = await Stock.find({
@@ -115,6 +115,7 @@ const searchStock = async (req, res) => {
       });
     }
   } catch (err) {
+    console.log({ search })
     res.json({
       errors: {
         common: {
@@ -128,10 +129,12 @@ const searchStock = async (req, res) => {
 //create a stock
 const createStock = async (req, res) => {
   try {
+    console.log(req.body)
     //make user object
     const newStock = new Stock({
       ...req.body,
-      totalPrice: req.body?.purchasePrice * req.body?.quantity,
+      purchasePrice: req.body?.purchasePrice || 0,
+      totalPrice: req.body?.sellingPrice * req.body?.quantity,
       picture: null,
       storeInfo: req.store?.storeId,
     });
@@ -139,9 +142,9 @@ const createStock = async (req, res) => {
     //save stock in database
     const stock = await newStock.save();
 
-
+    // Update daily stock record
     await updateDailyStock(
-      productId,
+      stock._id,
       0,           // quantity sold (0 for additions)
       req.body?.quantity,    // quantity added
       req.store?.storeId,
@@ -163,6 +166,7 @@ const createStock = async (req, res) => {
       });
     }
   } catch (err) {
+    console.log(err)
     res.json({
       errors: {
         common: {
@@ -192,6 +196,7 @@ const updateStock = async (req, res) => {
       { new: true }
     );
 
+    // Update daily stock record
     await updateDailyStock(
       stockId,
       0,           // quantity sold (0 for additions)
@@ -215,7 +220,7 @@ const updateStock = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.json({
       errors: {
         common: {
@@ -265,13 +270,11 @@ const deleteStock = async (req, res) => {
 };
 
 
-// controllers/dailyStockController.js
-// const DailyStock = require('../models/DailyStock');
-
+// Get daily stock report
 const getDailyStockReport = async (req, res) => {
   try {
     const { startDate, endDate, productId } = req.query;
-    console.log(req.query)
+    console.log(req.query);
     const storeId = req.store.storeId;
 
     const filter = { storeInfo: storeId };

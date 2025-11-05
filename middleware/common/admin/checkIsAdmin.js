@@ -17,7 +17,7 @@ const checkIsAdmin = (req, res, next) => {
 
   try {
     const token = authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const decoded = jwt.verify(token, "process.env.JWT_SECRET_KEY");
     // const { storeName, ownerName, phone, email, _id, role } = decoded;
     const { storeInfo, userInfo } = decoded
 

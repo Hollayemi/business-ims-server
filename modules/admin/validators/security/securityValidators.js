@@ -11,10 +11,8 @@ const securityValidators = [
   check("newPassword")
     .notEmpty()
     .withMessage("New password is required")
-    .isStrongPassword()
-    .withMessage(
-      "Password must be at least 8 characters long & should contain at least 1 lowercase, 1 uppercase, 1 number & 1 symbol"
-    )
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long")
     .custom((value, { req }) => {
       if (value === req.body.oldPassword) {
         throw createError("Old password and new password cannot be the same");
@@ -22,6 +20,7 @@ const securityValidators = [
       return true;
     })
     .trim(),
+
   check("confirmNewPassword")
     .notEmpty()
     .withMessage("Confirm new password is required")

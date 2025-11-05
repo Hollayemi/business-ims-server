@@ -1,7 +1,7 @@
 
 
 const bcrypt = require("bcrypt");
-const Store = require("../../../superAdmin/models/storeSchema");
+const Store = require("../../../admin/models/employeeSchema");
 
 //change password controller
 const changePassword = async (req, res) => {
@@ -19,8 +19,9 @@ const changePassword = async (req, res) => {
       });
     }
 
+    console.log({ email: req.staff })
     //check valid store
-    const store = await Store.findOne({ email: req.store.email }).select(
+    const store = await Store.findOne({ email: req.staff.email }).select(
       "+password"
     );
     if (!store) {
@@ -33,6 +34,7 @@ const changePassword = async (req, res) => {
       });
     }
 
+    console.log({ oldPassword, pass: store.password })
     //check hash of old password
     const isMatch = await bcrypt.compare(oldPassword, store.password);
     if (!isMatch) {
@@ -65,6 +67,7 @@ const changePassword = async (req, res) => {
       });
     }
   } catch (err) {
+    console.log({ err })
     res.json({
       errors: {
         common: {

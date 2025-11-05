@@ -24,11 +24,11 @@ const stockValidators = [
   check("category").notEmpty().withMessage("Category is required"),
   // check("subcategory"),
 
-  check("purchasePrice")
-    .notEmpty()
-    .withMessage("Purchase Price is required")
-    .isInt({ min: 1 })
-    .withMessage("Purchase Price must be greater than 0"),
+  // check("purchasePrice")
+  //   .notEmpty()
+  //   .withMessage("Purchase Price is required")
+  //   .isInt({ min: 1 })
+  //   .withMessage("Purchase Price must be greater than 0"),
 
   check("sellingPrice")
     .notEmpty()

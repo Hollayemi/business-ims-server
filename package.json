@@ -1,13 +1,48 @@
 {
-  "name": "business-ims-server",
+  "name": "benevis-server",
   "version": "1.0.0",
-  "main": "index.js",
-  "author": "sk sabbir hossain <sksabbirhossain4@gmail.com>",
-  "repository": "https://github.com/sksabbirhossain/business-ims-server",
+  "main": "electron/main.js",
+  "author": "oluwasusi stephen <oluwasusistephen@gmail.com>",
+  "description": "Benevis Aluminum Desktop Application",
   "license": "SEE LICENSE IN LICENSE.md",
   "scripts": {
+    "start": "node index.js",
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "electron": "electron .",
+    "electron:dev": "nodemon --exec electron . --watch electron/",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.businessims.server",
+    "productName": "Benevis Server",
+    "directories": {
+      "output": "dist2"
+    },
+    "files": [
+      "electron/**/*",
+      "index.js",
+      "app.js",
+      "configs/**/*",
+      "middleware/**/*",
+      "modules/**/*",
+      "utils/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -20,7 +55,11 @@
     "ioredis": "^5.6.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
-    "nodemon": "^3.1.7",
     "stripe": "^18.1.0"
+  },
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3",
+    "nodemon": "^3.1.7"
   }
 }

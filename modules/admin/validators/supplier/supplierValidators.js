@@ -18,8 +18,7 @@ const supplierValidators = [
     .withMessage("Description must-be 2 characters")
     .trim(),
   check("description")
-    .notEmpty()
-    .withMessage("Description is required")
+    .optional({ checkFalsy: true })
     .isLength({ min: 10 })
     .withMessage("Description must-be 10 characters")
     .trim(),
@@ -29,8 +28,7 @@ const supplierValidators = [
     .withMessage("Email must-be a valid email address")
     .trim(),
   check("phone")
-    .notEmpty()
-    .withMessage("Phone is required")
+    .optional({ checkFalsy: true })
     .isMobilePhone()
     .withMessage("Phone number must-be a valid number")
     .trim(),
@@ -40,8 +38,7 @@ const supplierValidators = [
     .withMessage("URL must-be a valid url")
     .trim(),
   check("address")
-    .notEmpty()
-    .withMessage("Address is required")
+    .optional({ checkFalsy: true })
     .isLength({ min: 10 })
     .withMessage("Address must-be 10 characters")
     .trim(),

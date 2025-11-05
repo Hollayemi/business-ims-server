@@ -97,12 +97,12 @@ const loginSuperAdmin = async (req, res) => {
     delete userInfo.password;
 
     //create accessToken
-    const accessToken = jwt.sign(userInfo, process.env.JWT_SECRET_KEY, {
+    const accessToken = jwt.sign(userInfo, "process.env.JWT_SECRET_KEY", {
       expiresIn: "1h",
     });
 
     // Create refreshToken
-    const refreshToken = jwt.sign(userInfo, process.env.JWT_SECRET_KEY, {
+    const refreshToken = jwt.sign(userInfo, "process.env.JWT_SECRET_KEY", {
       expiresIn: "7d",
     });
 

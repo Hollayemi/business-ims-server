@@ -22,12 +22,12 @@ const categoryValidators = [
         throw createError(err.message);
       }
     }),
-  check("description")
-    .notEmpty()
-    .withMessage("Description is required")
-    .isLength({ min: 10 })
-    .withMessage("Description must-be 10 characters")
-    .trim(),
+  // check("description")
+  //   .notEmpty()
+  //   .withMessage("Description is required")
+  //   .isLength({ min: 10 })
+  //   .withMessage("Description must-be 10 characters")
+  //   .trim(),
 ];
 
 const categoryValidationHandler = (req, res, next) => {
@@ -36,6 +36,7 @@ const categoryValidationHandler = (req, res, next) => {
   if (Object.keys(mappedErrors).length === 0) {
     next();
   } else {
+    console.log({ errors })
     res.status(500).json({
       errors: mappedErrors,
     });

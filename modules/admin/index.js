@@ -14,10 +14,7 @@ router.use("/customer", require("./routes/customer/customerRouter"));
 router.use("/bank", require("./routes/bank/bankRouter"));
 router.use("/employee", require("./routes/employee/employeeRouter"));
 router.use("/financial", require("./routes/financial/financialRouter"));
-router.use(
-  "/subscription",
-  require("./routes/subscription/subscriptionRouter")
-);
+
 router.use("/security", require("./routes/security/securityRouter"));
 
 module.exports = router;

@@ -8,17 +8,17 @@ const checkUser = async (req, res) => {
   try {
     const { authorization } = req.headers;
     const token = authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const decoded = jwt.verify(token, "process.env.JWT_SECRET_KEY");
 
     if (decoded?._id) {
       const { exp, iat, ...userInfo } = decoded;
       //create accessToken
-      const accessToken = jwt.sign(userInfo, process.env.JWT_SECRET_KEY, {
+      const accessToken = jwt.sign(userInfo, "process.env.JWT_SECRET_KEY", {
         expiresIn: "1h",
       });
 
       //create refreshToken
-      const refreshToken = jwt.sign(userInfo, process.env.JWT_SECRET_KEY, {
+      const refreshToken = jwt.sign(userInfo, "process.env.JWT_SECRET_KEY", {
         expiresIn: "7d",
       });
 

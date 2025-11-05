@@ -40,7 +40,7 @@ monitorConnection();
  */
 async function connectDB() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
+    await mongoose.connect("mongodb://localhost:27017/business-ims", {
       serverSelectionTimeoutMS: 5000, // 5s timeout
     });
     console.log("✅ Database connected");
@@ -49,7 +49,7 @@ async function connectDB() {
     if (!app.listening) {
       app.listen(PORT, '0.0.0.0', () => {
         app.listening = true; // custom flag
-        console.log(`🚀 Server running on port ${PORT} and 172.20.10.8`);
+        console.log(`🚀 Server running on port ${PORT}`);
       });
     }
   } catch (err) {

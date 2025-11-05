@@ -42,12 +42,12 @@ const logInStore = async (req, res) => {
     delete storeInfo.password;
 
     //create accessToken
-    const accessToken = jwt.sign(storeInfo, process.env.JWT_SECRET_KEY, {
+    const accessToken = jwt.sign(storeInfo, "process.env.JWT_SECRET_KEY", {
       expiresIn: "1h",
     });
 
     // Create refreshToken
-    const refreshToken = jwt.sign(storeInfo, process.env.JWT_SECRET_KEY, {
+    const refreshToken = jwt.sign(storeInfo, "process.env.JWT_SECRET_KEY", {
       expiresIn: "7d",
     });
 

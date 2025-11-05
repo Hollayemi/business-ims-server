@@ -103,12 +103,12 @@ const loginStaff = async (req, res) => {
 
     console.log({ storeInfo })
     //create accessToken
-    const accessToken = jwt.sign({ userInfo, storeInfo }, process.env.JWT_SECRET_KEY, {
+    const accessToken = jwt.sign({ userInfo, storeInfo }, "process.env.JWT_SECRET_KEY", {
       expiresIn: "1h",
     });
 
     // Create refreshToken
-    const refreshToken = jwt.sign({ userInfo, storeInfo }, process.env.JWT_SECRET_KEY, {
+    const refreshToken = jwt.sign({ userInfo, storeInfo }, "process.env.JWT_SECRET_KEY", {
       expiresIn: "7d",
     });
 
@@ -124,6 +124,7 @@ const loginStaff = async (req, res) => {
       msg: "Staff login successful!",
     });
   } catch (err) {
+    console.log(err)
     res.json({
       errors: {
         common: {
