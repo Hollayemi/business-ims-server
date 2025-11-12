@@ -12,12 +12,11 @@ const stockValidators = [
     .withMessage("Name must-be 3 characters")
     .trim(),
 
-  check("description")
-    .notEmpty()
-    .withMessage("Description is required")
-    .isLength({ min: 10 })
-    .withMessage("Description must-be 10 characters")
-    .trim(),
+  // check("description")
+  //   .optional({ checkFalsy: true })
+  //   .isLength({ min: 10 })
+  //   .withMessage("Description must-be 10 characters")
+  //   .trim(),
 
   check("uom").notEmpty().withMessage("Unit of Measure is required"),
 
@@ -30,11 +29,11 @@ const stockValidators = [
   //   .isInt({ min: 1 })
   //   .withMessage("Purchase Price must be greater than 0"),
 
-  check("sellingPrice")
-    .notEmpty()
-    .withMessage("Selling Price is required")
-    .isInt({ min: 1 })
-    .withMessage("Selling Price must be greater than 0"),
+  // check("sellingPrice")
+  //   .notEmpty()
+  //   .withMessage("Selling Price is required")
+  //   .isInt({ min: 1 })
+  //   .withMessage("Selling Price must be greater than 0"),
 
   check("quantity")
     .notEmpty()
@@ -42,7 +41,7 @@ const stockValidators = [
     .isInt({ min: 1 })
     .withMessage("Quantity must more than 0"),
 
-  check("supplierInfo").notEmpty().withMessage("Supplier is required"),
+  check("supplierInfo").optional({ checkFalsy: true }),
 ];
 
 const stockValidationHandler = (req, res, next) => {

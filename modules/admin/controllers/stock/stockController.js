@@ -129,7 +129,6 @@ const searchStock = async (req, res) => {
 //create a stock
 const createStock = async (req, res) => {
   try {
-    console.log(req.body)
     //make user object
     const newStock = new Stock({
       ...req.body,

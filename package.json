@@ -18,7 +18,7 @@
     "appId": "com.businessims.server",
     "productName": "Benevis Server",
     "directories": {
-      "output": "dist2"
+      "output": "dist4"
     },
     "files": [
       "electron/**/*",

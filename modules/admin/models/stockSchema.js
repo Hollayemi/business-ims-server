@@ -11,8 +11,8 @@ const stockSchema = mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
-      lowercase: true,
+      required: false,
+      lowercase: false,
       trim: true,
     },
     purchasePrice: {
@@ -44,7 +44,7 @@ const stockSchema = mongoose.Schema(
     supplierInfo: {
       type: mongoose.Types.ObjectId,
       ref: "Supplier",
-      required: true,
+      required: false,
     },
     storeInfo: {
       type: mongoose.Types.ObjectId,

@@ -23,15 +23,19 @@ async function monitorConnection() {
   if (online && !syncing) {
     console.log("✅ Internet detected. Starting sync...");
     syncing = true;
-    // await pollSync();
+    try {
+      await pollSync();
+    } catch (err) {
+      console.log("Internet Issue", err)
+    }
   } else if (!online && syncing) {
     console.log("❌ Internet lost. Sync paused.");
     syncing = false;
   }
 }
 
-// Check every 1 minute
-setInterval(monitorConnection, 60_000);
+// Check every 3 minute
+setInterval(monitorConnection, 180_000);
 // Run immediately at startup
 monitorConnection();
 

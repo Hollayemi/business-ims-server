@@ -14,8 +14,7 @@ async function pollSync() {
     const localDb = localClient.db(dbName);
     const serverDb = serverClient.db(dbName);
 
-    console.log("🔄 Polling for changes every 10s...");
-
+    console.log("🔄 Polling for changes every 3mins...");
     setInterval(async () => {
         const collections = await localDb.listCollections().toArray();
 
@@ -29,7 +28,7 @@ async function pollSync() {
                 console.log(`✅ Synced ${name}`);
             }
         }
-    }, 10000);
+    }, 180000);
 }
 
 // pollSync().catch(console.error);

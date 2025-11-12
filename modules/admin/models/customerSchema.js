@@ -10,18 +10,18 @@ const customerSchema = mongoose.Schema(
     },
     email: {
       type: String,
-      unique: true,
+      unique: false,
       trim: true,
     },
     phone: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
       trim: true,
     },
     address: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     picture: {
